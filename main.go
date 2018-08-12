@@ -38,8 +38,8 @@ func routes(w http.ResponseWriter, r *http.Request) {
 	case route == "/":
 		fmt.Fprintf(w, "Welcome to Parkinson's API built in GO")
 	case strings.HasPrefix(route, "/api/v1/patients") && method == "GET":
-		found, id := CheckForIDInRoute(path.Base(r.URL.Path))
 		var response []byte
+		found, id := CheckForIDInRoute(path.Base(r.URL.Path))
 		if !found {
 			response = ConvertToJSON(patients.GetAllPatients())
 		} else {
