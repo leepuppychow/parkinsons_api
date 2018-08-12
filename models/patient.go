@@ -1,5 +1,7 @@
 package patient
 
+import "fmt"
+
 // Note the fields in the struct must be capitalized otherwise they won't be exported
 // and json.Marshal won't be able to access those fields.
 
@@ -30,4 +32,21 @@ func Find(id int) Patient {
 		}
 	}
 	return patient
+}
+
+func Create() {
+
+}
+
+func Update(id int) string{
+	return fmt.Sprintf("Updated patient with id %d", id)
+}
+
+func Delete(id int) string {
+	for i, p := range Patients {
+		if p.Id == id {
+			Patients = append(Patients[:i], Patients[i+1:]...)
+		}
+	}
+	return fmt.Sprintf("Patient with id %d was deleted", id)
 }
