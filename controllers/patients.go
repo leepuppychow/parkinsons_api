@@ -29,13 +29,13 @@ func Show(w http.ResponseWriter, r *http.Request) {
 }
 
 func Create(w http.ResponseWriter, r *http.Request) {
-
+	w.Write(ToJSON(patient.Create(r.Body)))
 }
 
 func Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
-	w.Write(ToJSON(patient.Update(id)))		 
+	w.Write(ToJSON(patient.Update(id, r.Body)))		 
 }
 
 func Delete(w http.ResponseWriter, r *http.Request) {

@@ -2,7 +2,9 @@ package patient
 
 import (
 	"fmt"
+	"io"
 	"parkinsons/database"
+	"encoding/json"
 )
 
 // Note the fields in the struct must be capitalized otherwise they won't be exported
@@ -59,18 +61,37 @@ func Find(id int) Patient {
 	return p
 }
 
-func Create() {
-
+func Create(body io.Reader) string {
+	var p Patient
+	err := json.NewDecoder(body).Decode(&p)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_, err = database.DB.Exec("INSERT INTO patients (firstname, lastname, age, user_id) VALUES ($1, $2, $3, $4)",
+														p.FirstName, p.LastName, p.Age, p.User_Id)
+	return "Patient created successfully"
 }
 
-func Update(id int) string{
-	return fmt.Sprintf("Updated patient with id %d", id)
+func Update(id int, body io.Reader) string {
+	var p Patient
+	err := json.NewDecoder(body).Decode(&p)
+	if err != nil {
+		fmt.Println(err)
+	}
+	res, err := database.DB.Exec("UPDATE patients SET firstname=$1, lastname=$2, age=$3, user_id=$4 WHERE id = $5",
+														p.FirstName, p.LastName, p.Age, p.User_Id, id)
+	row, _ := res.RowsAffected()
+	if row == 0 {
+		return fmt.Sprintf("Patient %d not found", id)
+	} else {
+		return fmt.Sprintf("Patient %d updated successfully", id)
+	}
 }
 
 func Delete(id int) string {
 	_, err := database.DB.Exec("DELETE FROM patients WHERE id=$1", id)
 	if err != nil {
-		return fmt.Sprintf("Patient with id %d was NOT deleted sucessfully %v", id, err)
+		return fmt.Sprintf("Error when trying to delete patient with id %d: %v", id, err)
 	} else {
 		return fmt.Sprintf("Patient with id %d was deleted", id)
 	}
