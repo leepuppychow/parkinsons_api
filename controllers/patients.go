@@ -27,3 +27,19 @@ func Show(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(vars["id"])
 	w.Write(ToJSON(patient.Find(id)))
 }
+
+func Create(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+	w.Write(ToJSON(patient.Update(id)))		 
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, _ := strconv.Atoi(vars["id"])
+	w.Write(ToJSON(patient.Delete(id)))
+}

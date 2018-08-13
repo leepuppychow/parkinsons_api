@@ -1,5 +1,10 @@
 package patient
 
+import (
+	"fmt"
+	"parkinsons/database"
+)
+
 // Note the fields in the struct must be capitalized otherwise they won't be exported
 // and json.Marshal won't be able to access those fields.
 
@@ -11,23 +16,62 @@ type Patient struct {
 	User_Id   int			`json:"user_id"`
 }
 
-var Patients = []Patient{
-	{Id: 1, FirstName: "Lee", LastName: "C", Age: 33, User_Id: 1},
-	{Id: 2, FirstName: "Jay", LastName: "C", Age: 33, User_Id: 2},
-	{Id: 3, FirstName: "Mom", LastName: "C", Age: 33, User_Id: 3},
-	{Id: 4, FirstName: "Ba", LastName: "C", Age: 33, User_Id: 4},
-}
+var firstname, lastname string
+var id, user_id, age int
 
 func All() []Patient {
-	return Patients
+	var patients []Patient
+	rows, err := database.DB.Query("SELECT * FROM patients")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		if err := rows.Scan(&id, &firstname, &lastname, &age, &user_id); err != nil {
+			fmt.Println(err)
+		}
+		p := Patient{ 
+			Id: id, 
+			FirstName: firstname, 
+			LastName: lastname, 
+			Age: age, 
+			User_Id: user_id,
+		}
+		patients = append(patients, p)
+	}
+	return patients
 }
 
 func Find(id int) Patient {
-	var patient Patient
-	for _, p := range Patients {
-		if p.Id == id {
-			patient = p
-		}
+	var p Patient
+	err := database.DB.QueryRow("SELECT * FROM patients WHERE id=$1", id).
+										Scan(&id, &firstname, &lastname, &age, &user_id)
+	if err != nil {
+		fmt.Println(err)
 	}
-	return patient
+	p = Patient{ 
+		Id: id, 
+		FirstName: firstname, 
+		LastName: lastname, 
+		Age: age, 
+		User_Id: user_id,
+	}
+	return p
+}
+
+func Create() {
+
+}
+
+func Update(id int) string{
+	return fmt.Sprintf("Updated patient with id %d", id)
+}
+
+func Delete(id int) string {
+	_, err := database.DB.Exec("DELETE FROM patients WHERE id=$1", id)
+	if err != nil {
+		return fmt.Sprintf("Patient with id %d was NOT deleted sucessfully %v", id, err)
+	} else {
+		return fmt.Sprintf("Patient with id %d was deleted", id)
+	}
 }

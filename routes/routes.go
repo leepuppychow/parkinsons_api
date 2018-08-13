@@ -17,8 +17,11 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	{ "Index", "GET", "/api/v1/patients", patients.Index },
-	{ "Show", "GET", "/api/v1/patients/{id}", patients.Show },
+	{ "PatientsIndex", "GET", "/api/v1/patients", patients.Index },
+	{ "PatientsShow", "GET", "/api/v1/patients/{id}", patients.Show },
+	{ "PatientsCreate", "POST", "/api/v1/patients", patients.Create },
+	{ "PatientsUpdate", "PATCH", "/api/v1/patients/{id}", patients.Update },
+	{ "PatientsDelete", "DELETE", "/api/v1/patients/{id}", patients.Delete },
 }
 
 func NewRouter() *mux.Router {
